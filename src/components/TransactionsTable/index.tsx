@@ -163,23 +163,25 @@ export default function TransactionTable({
   const [txFilter, setTxFilter] = useState<TransactionType | undefined>(undefined)
 
   const sortedTransactions = useMemo(() => {
+    if (!transactions) {
+      transactions = []
+    }
+
     return transactions
-      ? transactions
-          .slice()
-          .sort((a, b) => {
-            if (a && b) {
-              return a[sortField as keyof Transaction] > b[sortField as keyof Transaction]
-                ? (sortDirection ? -1 : 1) * 1
-                : (sortDirection ? -1 : 1) * -1
-            } else {
-              return -1
-            }
-          })
-          .filter((x) => {
-            return txFilter === undefined || x.type === txFilter
-          })
-          .slice(maxItems * (page - 1), page * maxItems)
-      : []
+      .slice()
+      .sort((a, b) => {
+        if (a && b) {
+          return a[sortField as keyof Transaction] > b[sortField as keyof Transaction]
+            ? (sortDirection ? -1 : 1) * 1
+            : (sortDirection ? -1 : 1) * -1
+        } else {
+          return -1
+        }
+      })
+      .filter((x) => {
+        return txFilter === undefined || x.type === txFilter
+      })
+      .slice(maxItems * (page - 1), page * maxItems)
   }, [transactions, maxItems, page, sortField, sortDirection, txFilter])
 
   const handleSort = useCallback(

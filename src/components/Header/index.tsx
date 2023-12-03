@@ -182,8 +182,7 @@ export default function Header() {
           </StyledNavLink>
         </HeaderLinks>
       </HeaderRow>
-      <HeaderControls>
-        <NetworkDropdown />
+      <HeaderControls>      
         <SearchSmall />
         <Menu />
       </HeaderControls>

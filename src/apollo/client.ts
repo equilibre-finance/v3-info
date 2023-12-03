@@ -21,7 +21,7 @@ export const blockClient = new ApolloClient({
 })
 
 export const client = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3?source=uniswap',
+  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/cl/graphql',
   cache: new InMemoryCache({
     typePolicies: {
       Token: {
@@ -49,7 +49,7 @@ export const client = new ApolloClient({
 })
 
 export const avalancheClient = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax?source=uniswap',
+  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/',
   cache: new InMemoryCache({
     typePolicies: {
       Token: {
