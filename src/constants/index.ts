@@ -45,14 +45,14 @@ export const POOL_HIDE: { [key: string]: string[] } = {
 }
 
 export const START_BLOCKS: { [key: string]: number } = {
-  [SupportedNetwork.ETHEREUM]: 14292820,
-  [SupportedNetwork.POLYGON]: 25459720,
-  [SupportedNetwork.ARBITRUM]: 175,
-  [SupportedNetwork.OPTIMISM]: 10028767,
-  [SupportedNetwork.CELO]: 13916355,
-  [SupportedNetwork.BNB]: 26324014,
-  [SupportedNetwork.AVALANCHE]: 31422450,
-  [SupportedNetwork.BASE]: 1371680,
+  [SupportedNetwork.ETHEREUM]: 7314061,
+  [SupportedNetwork.POLYGON]: 7314061,
+  [SupportedNetwork.ARBITRUM]: 7314061,
+  [SupportedNetwork.OPTIMISM]: 7314061,
+  [SupportedNetwork.CELO]: 7314061,
+  [SupportedNetwork.BNB]: 7314061,
+  [SupportedNetwork.AVALANCHE]: 7314061,
+  [SupportedNetwork.BASE]: 7314061,
 }
 
 export interface WalletInfo {

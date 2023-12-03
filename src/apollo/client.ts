@@ -1,12 +1,12 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 
 export const healthClient = new ApolloClient({
-  uri: 'https://api.thegraph.com/index-node/graphql',
+  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/cl',
   cache: new InMemoryCache(),
-})
+});
 
 export const blockClient = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
+  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/cl',
   cache: new InMemoryCache(),
   queryDeduplication: true,
   defaultOptions: {
@@ -21,7 +21,7 @@ export const blockClient = new ApolloClient({
 })
 
 export const client = new ApolloClient({
-  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/cl/graphql',
+  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/cl',
   cache: new InMemoryCache({
     typePolicies: {
       Token: {
@@ -49,7 +49,7 @@ export const client = new ApolloClient({
 })
 
 export const avalancheClient = new ApolloClient({
-  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/',
+  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/cl',
   cache: new InMemoryCache({
     typePolicies: {
       Token: {
@@ -77,7 +77,7 @@ export const avalancheClient = new ApolloClient({
 })
 
 export const avalancheBlockClient = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/lynnshaoyu/avalanche-blocks',
+  uri: 'https://graph.equilibrefinance.com/subgraphs/name/equilibre/cl',
   cache: new InMemoryCache(),
   queryDeduplication: true,
   defaultOptions: {

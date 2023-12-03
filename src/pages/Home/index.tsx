@@ -26,6 +26,8 @@ import { SmallOptionButton } from 'components/Button'
 import { VolumeWindow } from 'types'
 import { Trace } from '@uniswap/analytics'
 
+import axios from 'axios';
+
 const ChartWrapper = styled.div`
   width: 49%;
 
@@ -45,40 +47,31 @@ export default function Home() {
 
   const [protocolData] = useProtocolData()
   const [transactions] = useProtocolTransactions()
-
-  const [volumeHover, setVolumeHover] = useState<number | undefined>()
+  
   const [liquidityHover, setLiquidityHover] = useState<number | undefined>()
   const [leftLabel, setLeftLabel] = useState<string | undefined>()
   const [rightLabel, setRightLabel] = useState<string | undefined>()
 
-  // Hot fix to remove errors in TVL data while subgraph syncs.
-  const [chartData] = useProtocolChartData()
-
-  useEffect(() => {
-    setLiquidityHover(undefined)
-    setVolumeHover(undefined)
-  }, [activeNetwork])
-
-  // get all the pool datas that exist
+  const [chartData] = useProtocolChartData()  
   const allPoolData = useAllPoolData()
+
+  const [volumeWindow, setVolumeWindow] = useState(VolumeWindow.weekly) 
+  const [totalTVL, setTotalTVL] = useState(0);
+  const [volume24, setVolume24] = useState(0);
+  
   const poolDatas = useMemo(() => {
     return Object.values(allPoolData)
       .map((p) => p.data)
       .filter(notEmpty)
   }, [allPoolData])
 
-  // if hover value undefined, reset to current day value
-  useEffect(() => {
-    if (volumeHover === undefined && protocolData) {
-      setVolumeHover(protocolData.volumeUSD)
-    }
-  }, [protocolData, volumeHover])
+  
   useEffect(() => {
     if (liquidityHover === undefined && protocolData) {
       setLiquidityHover(protocolData.tvlUSD)
     }
   }, [liquidityHover, protocolData])
-
+  
   const formattedTvlData = useMemo(() => {
     if (chartData) {
       return chartData.map((day) => {
@@ -116,15 +109,40 @@ export default function Home() {
       .filter(notEmpty)
   }, [allTokens])
 
-  const [volumeWindow, setVolumeWindow] = useState(VolumeWindow.weekly)
+  
 
-  const tvlValue = useMemo(() => {
-    if (liquidityHover) {
-      return formatDollarAmount(liquidityHover, 2, true)
-    }
-    return formatDollarAmount(protocolData?.tvlUSD, 2, true)
-  }, [liquidityHover, protocolData?.tvlUSD])
+  // Fetch TVL data from the API
+  useEffect(() => {    
+    const getContractDataTVL = async () => {
+      try {
+        const response = await axios.get(`https://apitest.equilibrefinance.com/api/v1/pairs`);
+        const items = response.data.data;
+        const tvl = items.reduce((acc: number, item: any) => acc + item.tvl, 0);
+        setTotalTVL(tvl);
+      } catch (error) {
+        console.error("Failed to fetch TVL:", error);
+      }
+    };
 
+    getContractDataTVL();
+  }, []); 
+
+  useEffect(() => {  
+    const getVolumeData = async () => {
+      try {
+        const response = await axios.get(`https://api.old.equilibrefinance.com/api/v1/configuration`);
+        const data = response.data.meta;
+        const volume = data.volume.volume_h24;
+        setVolume24(volume);
+      } catch (error) {
+        console.error("Failed to fetch volume:", error);
+      }
+    };
+
+    getVolumeData();
+  }, []); 
+
+  
   return (
     <Trace page={'home-page'} shouldLogImpression>
       <PageWrapper>
@@ -146,7 +164,7 @@ export default function Home() {
                   <AutoColumn $gap="4px">
                     <TYPE.mediumHeader fontSize="16px">TVL</TYPE.mediumHeader>
                     <TYPE.largeHeader fontSize="32px">
-                      <MonoSpace>{tvlValue} </MonoSpace>
+                      <MonoSpace>{formatDollarAmount(totalTVL, 2, true)} </MonoSpace>
                     </TYPE.largeHeader>
                     <TYPE.main fontSize="12px" height="14px">
                       {leftLabel ? <MonoSpace>{leftLabel} (UTC)</MonoSpace> : null}
@@ -167,9 +185,8 @@ export default function Home() {
                     : formattedVolumeData
                 }
                 color={theme?.blue1}
-                setValue={setVolumeHover}
                 setLabel={setRightLabel}
-                value={volumeHover}
+                value={volume24}
                 label={rightLabel}
                 activeWindow={volumeWindow}
                 topRight={
@@ -200,7 +217,7 @@ export default function Home() {
                   <AutoColumn $gap="4px">
                     <TYPE.mediumHeader fontSize="16px">Volume 24H</TYPE.mediumHeader>
                     <TYPE.largeHeader fontSize="32px">
-                      <MonoSpace> {formatDollarAmount(volumeHover, 2)}</MonoSpace>
+                      <MonoSpace> {formatDollarAmount(volume24, 2)}</MonoSpace>
                     </TYPE.largeHeader>
                     <TYPE.main fontSize="12px" height="14px">
                       {rightLabel ? <MonoSpace>{rightLabel} (UTC)</MonoSpace> : null}
@@ -216,8 +233,7 @@ export default function Home() {
                 <RowFixed>
                   <RowFixed mr="20px">
                     <TYPE.main mr="4px">Volume 24H: </TYPE.main>
-                    <TYPE.label mr="4px">{formatDollarAmount(protocolData?.volumeUSD)}</TYPE.label>
-                    <Percent value={protocolData?.volumeUSDChange} wrap={true} />
+                    <TYPE.label mr="4px">{formatDollarAmount(volume24)}</TYPE.label>                    
                   </RowFixed>
                   <RowFixed mr="20px">
                     <TYPE.main mr="4px">Fees 24H: </TYPE.main>
@@ -227,9 +243,8 @@ export default function Home() {
                   <HideMedium>
                     <RowFixed mr="20px">
                       <TYPE.main mr="4px">TVL: </TYPE.main>
-                      <TYPE.label mr="4px">{formatDollarAmount(protocolData?.tvlUSD)}</TYPE.label>
-                      <TYPE.main></TYPE.main>
-                      <Percent value={protocolData?.tvlUSDChange} wrap={true} />
+                      <TYPE.label mr="4px">{formatDollarAmount(totalTVL)}</TYPE.label>
+                      <TYPE.main></TYPE.main>                      
                     </RowFixed>
                   </HideMedium>
                 </RowFixed>
